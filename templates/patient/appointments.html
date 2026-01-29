@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}My Appointments - NexGen Hospital{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 1rem 15px;">
+    <div class="flex-between mb-3">
+        <div>
+            <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem;">My Appointments</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 0; font-size: 0.9rem;">View and track all your
+                appointment requests</p>
+        </div>
+        <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">← Back</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if appointments %}
+            <div class="table-container" style="padding: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Doctor</th>
+                            <th>Specialization</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Requested On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td>#{{ appointment.id }}</td>
+                            <td>{{ appointment.doctor.name }}</td>
+                            <td>{{ appointment.doctor.specialization }}</td>
+                            <td>{{ appointment.appointment_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ appointment.appointment_time }}</td>
+                            <td>
+                                <span class="badge badge-{{ appointment.status }}">{{ appointment.status }}</span>
+                            </td>
+                            <td>{{ appointment.created_at.strftime('%d-%m-%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 2rem;">
+                {% if status_filter == 'pending' %}
+                <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem;">No pending approvals
+                    at the moment.</p>
+                <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">All your appointments have
+                    been reviewed.
+                </p>
+                {% elif status_filter == 'approved' %}
+                <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem;">No approved
+                    appointments yet.</p>
+                <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Book an appointment and
+                    wait for admin
+                    approval.</p>
+                {% elif status_filter == 'rejected' %}
+                <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem;">No rejected
+                    appointments.</p>
+                {% else %}
+                <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem;">You haven't booked
+                    any appointments yet.</p>
+                {% endif %}
+                <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">Book Your Next
+                    Appointment</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

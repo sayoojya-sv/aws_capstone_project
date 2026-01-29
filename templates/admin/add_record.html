@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Add Medical Record - {{ patient.username }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 20px; max-width: 700px;">
+    <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">Add Medical Record</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Patient: <strong>{{ patient.username }}</strong> ({{
+        patient.email }})</p>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.add_record', patient_id=patient.id) }}">
+                <div class="form-group">
+                    <label for="doctor_id" class="form-label">Consulting Doctor</label>
+                    <select id="doctor_id" name="doctor_id" class="form-control" required>
+                        <option value="">Select doctor...</option>
+                        {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}">{{ doctor.name }} - {{ doctor.specialization }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="visit_date" class="form-label">Visit Date</label>
+                    <input type="date" id="visit_date" name="visit_date" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="diagnosis" class="form-label">Diagnosis</label>
+                    <textarea id="diagnosis" name="diagnosis" class="form-control"
+                        placeholder="Enter diagnosis details..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prescription" class="form-label">Prescription (Optional)</label>
+                    <textarea id="prescription" name="prescription" class="form-control"
+                        placeholder="Enter prescribed medications and dosage..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes" class="form-label">Additional Notes (Optional)</label>
+                    <textarea id="notes" name="notes" class="form-control"
+                        placeholder="Any additional observations or instructions..."></textarea>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save Medical Record</button>
+                    <a href="{{ url_for('admin.patient_records', patient_id=patient.id) }}"
+                        class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set max date to today
+    document.getElementById('visit_date').max = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

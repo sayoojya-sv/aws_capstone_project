@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard - NexGen Hospital{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 1rem 15px;">
+    <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem;">Welcome, {{ current_user.username }}!
+    </h1>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Here's your health dashboard
+        overview</p>
+
+    <!-- Profile Overview -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-body"
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem 2rem; color: var(--text-secondary);">
+                    <div><strong>Username:</strong> {{ current_user.username }}</div>
+                    <div><strong>Email:</strong> {{ current_user.email }}</div>
+                    <div><strong>Date of Birth:</strong> {{ current_user.date_of_birth.strftime('%Y-%m-%d') if
+                        current_user.date_of_birth else 'Not Set' }}</div>
+                    <div><strong>Age:</strong> {{ current_user.age if current_user.age else 'N/A' }}</div>
+                </div>
+            </div>
+            <div>
+                <a href="{{ url_for('patient.update_profile') }}" class="btn btn-outline"
+                    style="padding: 0.4rem 1rem; font-size: 0.9rem;">Update Details</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <a href="{{ url_for('patient.appointments') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-value">{{ total_appointments }}</div>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+        </a>
+        <a href="{{ url_for('patient.appointments') }}?status=pending" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-value">{{ pending_appointments }}</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+        </a>
+        <a href="{{ url_for('patient.appointments') }}?status=approved" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-value">{{ approved_appointments }}</div>
+                <div class="stat-label">Approved</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="margin: 1.5rem 0;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem;">Quick Actions</h2>
+        <div class="flex gap-2">
+            <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">📅 Book New Appointment</a>
+            <a href="{{ url_for('patient.appointments') }}" class="btn btn-secondary">📋 View All Appointments</a>
+            <a href="{{ url_for('patient.records') }}" class="btn btn-success">📋 Medical Records</a>
+        </div>
+    </div>
+
+    <!-- Recent Appointments -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Recent Appointments</h3>
+        </div>
+        <div class="card-body">
+            {% if recent_appointments %}
+            <div class="table-container" style="padding: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in recent_appointments %}
+                        <tr>
+                            <td>{{ appointment.doctor.name }}</td>
+                            <td>{{ appointment.appointment_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ appointment.appointment_time }}</td>
+                            <td>
+                                <span class="badge badge-{{ appointment.status }}">{{ appointment.status }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No appointments yet. Book your
+                next appointment!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

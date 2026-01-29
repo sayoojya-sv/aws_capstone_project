@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Medical History - {{ patient.username }} - NexMed-Hub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/records.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 0;">
+    <div class="flex-between mb-4">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Medical History</h1>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Patient: <span
+                    style="font-weight: 600; color: var(--primary-color);">{{ patient.username }}</span> <span
+                    style="color: var(--text-muted); font-size: 1rem;">(Age: {{ patient.age if patient.age else 'N/A'
+                    }})</span></p>
+        </div>
+        <a href="{{ url_for('doctor.records') }}" class="btn btn-outline">Back to All Records</a>
+    </div>
+
+    {% if records %}
+    <div class="records-timeline">
+        {% for record in records %}
+        <div class="card mb-4" style="border-left: 4px solid var(--primary-color);">
+            <div class="card-header flex-between" style="background: var(--bg-card-solid); padding: 1rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Visit on {{
+                    record.visit_date.strftime('%d %B, %Y') }}</h3>
+                <span class="badge badge-info">Record #{{ record.id }}</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <h4
+                        style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem;">
+                        Diagnosis</h4>
+                    <p style="font-size: 1.1rem; font-weight: 500;">{{ record.diagnosis }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <h4
+                        style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem;">
+                        Prescription</h4>
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius-sm);">
+                        <p style="font-family: monospace; font-size: 1rem;">{{ record.prescription if
+                            record.prescription else 'No prescription recorded.' }}</p>
+                    </div>
+                </div>
+
+                {% if record.notes %}
+                <div>
+                    <h4
+                        style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem;">
+                        Doctor's Notes</h4>
+                    <p style="font-style: italic; color: var(--text-muted);">{{ record.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center p-5 card">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📂</div>
+        <h3>No records found</h3>
+        <p class="text-muted">This patient has no medical records history with you.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+<div class="table-container" style="padding: 0;">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Date / Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments_list %}
+            <tr data-status="{{ appointment.status }}">
+                <td>#{{ appointment.id }}</td>
+                <td>
+                    <div style="font-weight: 600;">{{ appointment.patient.username }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">{{ appointment.patient.email }}</div>
+                </td>
+                <td>
+                    <div style="font-weight: 500;">{{ appointment.doctor.name }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">{{ appointment.doctor.specialization }}
+                    </div>
+                </td>
+                <td>
+                    <div>{{ appointment.appointment_date.strftime('%d %b, %Y') }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">{{ appointment.appointment_time }}
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-{{ appointment.status }}">{{ appointment.status|capitalize }}</span>
+                </td>
+                <td>
+                    {% if appointment.status == 'pending' %}
+                    <div class="flex gap-1">
+                        <a href="{{ url_for('admin.approve_appointment', appointment_id=appointment.id) }}"
+                            class="btn btn-success" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">✓</a>
+                        <a href="{{ url_for('admin.reject_appointment', appointment_id=appointment.id) }}"
+                            class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">✕</a>
+                    </div>
+                    {% else %}
+                    <span style="color: var(--text-muted);">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

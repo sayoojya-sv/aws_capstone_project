@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Create Doctor - Admin - NexMed-Hub{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 0; max-width: 800px;">
+    <div class="flex-between mb-3">
+        <h1 style="font-size: 2rem; font-weight: 700;">Create Doctor Account</h1>
+        <a href="{{ url_for('admin.manage_doctors') }}" class="btn btn-outline"
+            style="padding: 0.5rem 1rem; font-size: 0.875rem;">Back</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Doctor Information</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Login Credentials</h3>
+
+                <div class="form-group">
+                    <label class="form-label">Username *</label>
+                    <input type="text" name="username" class="form-control" required
+                        placeholder="Enter username for login">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" name="email" class="form-control" required placeholder="doctor@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" name="password" class="form-control" required
+                        placeholder="Enter temporary password">
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">Doctor can change this after first
+                        login</small>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--border-light); margin: 1.5rem 0;">
+
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Professional Details</h3>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Dr. John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Specialization *</label>
+                    <input type="text" name="specialization" class="form-control" required
+                        placeholder="e.g., Cardiology, Pediatrics">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Available Slots per Day</label>
+                    <input type="number" name="slots" class="form-control" value="10" min="1" placeholder="10">
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">Number of patient appointments this
+                        doctor can handle per day</small>
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary">Create Doctor Account</button>
+                    <a href="{{ url_for('admin.manage_doctors') }}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Records - NexGen Hospital{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 1rem 15px;">
+    <div class="flex-between mb-3">
+        <div>
+            <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem;">My Medical Records</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 0; font-size: 0.9rem;">Your complete health history
+                and medical records
+            </p>
+        </div>
+        <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">← Back</a>
+    </div>
+
+    {% if records %}
+    <div style="display: grid; gap: 1rem;">
+        {% for record in records %}
+        <div class="card">
+            <div class="card-header flex-between">
+                <div>
+                    <h3 class="card-title">Visit on {{ record.visit_date.strftime('%d-%m-%Y') }}</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.25rem;">{{ record.doctor.name }} - {{
+                        record.doctor.specialization }}</p>
+                </div>
+                <span class="badge badge-approved">Record #{{ record.id }}</span>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <strong style="color: var(--text-secondary);">Diagnosis:</strong>
+                        <p style="margin-top: 0.5rem;">{{ record.diagnosis }}</p>
+                    </div>
+
+                    {% if record.prescription %}
+                    <div>
+                        <strong style="color: var(--text-secondary);">Prescription:</strong>
+                        <p style="margin-top: 0.5rem;">{{ record.prescription }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if record.notes %}
+                    <div>
+                        <strong style="color: var(--text-secondary);">Additional Notes:</strong>
+                        <p style="margin-top: 0.5rem;">{{ record.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 2rem;">
+            <p style="font-size: 1rem; color: var(--text-secondary);">No medical records found.</p>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">Your medical records will appear here after your
+                appointments.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

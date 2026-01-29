@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - NexMed-Hub{% endblock %}
+
+{% block extra_css %}
+<!-- Homepage Specific Styles -->
+<style>
+    body {
+        overflow: hidden;
+        /* Prevent scrolling for immersive experience */
+    }
+
+    main {
+        height: calc(100vh - 60px);
+        /* Fill remaining viewport (viewport - navbar) */
+        overflow: hidden;
+    }
+
+    .footer {
+        display: none;
+        /* Hide footer on homepage for clean look */
+    }
+
+    /* Hero Section - Full Viewport Container */
+    .hero-section {
+        position: relative;
+        height: calc(100vh - 60px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    /* Animated Background Image */
+    .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.12;
+        z-index: 0;
+        animation: zoomPulse 20s ease-in-out infinite;
+        /* Slow zoom effect */
+    }
+
+    @keyframes zoomPulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    /* Main Center Content */
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 750px;
+        padding: 0 2rem;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 2rem;
+        color: rgba(69, 123, 157, 0.15);
+        /* Subtle title coloring */
+        line-height: 1.2;
+        letter-spacing: -1.5px;
+        animation: fadeInUp 0.8s ease;
+        /* Entrance animation */
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: 3rem;
+        line-height: 1.6;
+        animation: fadeInUp 1s ease;
+        font-weight: 400;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Call to Action Buttons */
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 1.2s ease;
+    }
+
+    .hero-buttons .btn {
+        min-width: 180px;
+        font-size: 1.05rem;
+    }
+
+    /* Floating Decorative Orbs */
+    .hero-section::before,
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        /* Soft glow effect */
+        opacity: 0.3;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .hero-section::before {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(69, 123, 157, 0.4) 0%, transparent 70%);
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .hero-section::after {
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(168, 218, 220, 0.4) 0%, transparent 70%);
+        bottom: 15%;
+        right: 10%;
+        animation-delay: 2s;
+    }
+
+    /* Animation Keyframes */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translate(0, 0);
+        }
+
+        50% {
+            transform: translate(20px, -20px);
+        }
+    }
+
+    /* Responsive Design Adjustments */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-buttons .btn {
+            min-width: 200px;
+        }
+
+        .hero-section::before,
+        .hero-section::after {
+            width: 250px;
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section - Single Viewport Layout -->
+<section class="hero-section">
+    <!-- Background Image -->
+    <img src="{{ url_for('static', filename='images/hero-bg.png') }}" alt="Healthcare Background" class="hero-bg">
+
+    <div class="hero-content">
+        <!-- Main Heading -->
+        <h1 class="hero-title">Transform Your<br>Healthcare Experience</h1>
+
+        <!-- Subheading -->
+        <p class="hero-subtitle">
+            Experience seamless healthcare management with our cutting-edge appointment booking platform. Your health,
+            simplified.
+        </p>
+
+        <!-- Dynamic Action Buttons based on Login State -->
+        <div class="hero-buttons">
+            {% if not current_user.is_authenticated %}
+            <!-- Guest Users -->
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Next</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Sign In</a>
+            {% else %}
+            <!-- Authenticated Users -->
+            {% if current_user.role == 'patient' %}
+            <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">Book Appointment</a>
+            <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline">Go to Dashboard</a>
+            {% else %}
+            <!-- Admin/Doctor -->
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">Admin Dashboard</a>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

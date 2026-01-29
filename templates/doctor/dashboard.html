@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Dashboard - NexMed-Hub{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 0;">
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Welcome, {{ doctor.name }}</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">{{ doctor.specialization }}</p>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <a href="{{ url_for('doctor.appointments') }}" class="stat-card"
+            style="text-decoration: none; color: inherit; transition: transform 0.2s; display: block;">
+            <div class="stat-value">{{ total_appointments }}</div>
+            <div class="stat-label">Total Appointments</div>
+        </a>
+        <a href="{{ url_for('doctor.appointments', status='pending') }}" class="stat-card"
+            style="text-decoration: none; color: inherit; transition: transform 0.2s; display: block;">
+            <div class="stat-value">{{ pending_appointments }}</div>
+            <div class="stat-label">Pending</div>
+        </a>
+        <a href="{{ url_for('doctor.appointments', status='approved') }}" class="stat-card"
+            style="text-decoration: none; color: inherit; transition: transform 0.2s; display: block;">
+            <div class="stat-value">{{ approved_appointments }}</div>
+            <div class="stat-label">Approved</div>
+        </a>
+        <a href="{{ url_for('doctor.records') }}" class="stat-card"
+            style="text-decoration: none; color: inherit; transition: transform 0.2s; display: block;">
+            <div class="stat-value">{{ total_records }}</div>
+            <div class="stat-label">Patient Records</div>
+        </a>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2 class="card-title">Quick Actions</h2>
+        </div>
+        <div class="card-body">
+            <div class="flex gap-2">
+                <a href="{{ url_for('doctor.appointments') }}" class="btn btn-primary">View All Appointments</a>
+                <a href="{{ url_for('doctor.records') }}" class="btn btn-secondary">View Patient Records</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Appointments -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2 class="card-title">Recent Appointments</h2>
+        </div>
+        <div class="card-body">
+            {% if recent_appointments %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in recent_appointments %}
+                        <tr>
+                            <td>{{ appointment.appointment_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ appointment.appointment_time }}</td>
+                            <td>{{ appointment.patient.username }}</td>
+                            <td>{{ appointment.reason[:50] }}...</td>
+                            <td>
+                                {% if appointment.status == 'pending' %}
+                                <span class="badge badge-pending">Pending</span>
+                                {% elif appointment.status == 'approved' %}
+                                <span class="badge badge-approved">Approved</span>
+                                {% else %}
+                                <span class="badge badge-rejected">Rejected</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="color: var(--text-muted);">No recent appointments.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

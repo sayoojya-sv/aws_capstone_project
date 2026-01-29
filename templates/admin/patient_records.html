@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Records - {{ patient.username }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 20px;">
+    <div class="flex-between mb-3">
+        <div>
+            <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">Medical Records - {{
+                patient.username }}</h1>
+            <p style="color: var(--text-secondary);">{{ patient.email }}</p>
+        </div>
+    </div>
+
+    {% if records %}
+    <div style="display: grid; gap: 1.5rem;">
+        {% for record in records %}
+        <div class="card">
+            <div class="card-header flex-between">
+                <div>
+                    <h3 class="card-title">Visit on {{ record.visit_date.strftime('%d-%m-%Y') }}</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.25rem;">{{ record.doctor.name }} - {{
+                        record.doctor.specialization }}</p>
+                </div>
+                <span class="badge badge-approved">Record #{{ record.id }}</span>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <strong style="color: var(--text-secondary);">Diagnosis:</strong>
+                        <p style="margin-top: 0.5rem;">{{ record.diagnosis }}</p>
+                    </div>
+
+                    {% if record.prescription %}
+                    <div>
+                        <strong style="color: var(--text-secondary);">Prescription:</strong>
+                        <p style="margin-top: 0.5rem;">{{ record.prescription }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if record.notes %}
+                    <div>
+                        <strong style="color: var(--text-secondary);">Additional Notes:</strong>
+                        <p style="margin-top: 0.5rem;">{{ record.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 3rem;">
+            <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 1.5rem;">No medical records found
+                for this patient.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 2rem;">
+        <a href="{{ url_for('admin.patients') }}" class="btn btn-outline">← Back to Patients</a>
+    </div>
+</div>
+{% endblock %}

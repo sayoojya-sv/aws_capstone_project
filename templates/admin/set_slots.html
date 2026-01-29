@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Slots - Admin{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 20px; max-width: 800px;">
+    <div class="flex-between mb-3">
+        <div>
+            <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">Slot Management</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">Configure daily appointment slots for each doctor
+            </p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">← Back</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Set Doctor Availability</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.set_slots') }}">
+                <div class="form-group">
+                    <label for="doctor_id" class="form-label">Select Doctor</label>
+                    <select id="doctor_id" name="doctor_id" class="form-control" required>
+                        <option value="">Choose a doctor...</option>
+                        {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}">{{ doctor.name }} - {{ doctor.specialization }} (Current: {{
+                            doctor.available_slots_per_day }} slots/day)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="slots" class="form-label">Daily Slot Limit</label>
+                    <input type="number" id="slots" name="slots" class="form-control" min="1" max="50"
+                        placeholder="Enter number of slots per day" required>
+                    <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">Recommended: 8-20 slots
+                        per day</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Slot Limit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Current Doctor Slots -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 class="card-title">Current Doctor Availability</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-container" style="padding: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doctor Name</th>
+                            <th>Specialization</th>
+                            <th>Slots Per Day</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doctor in doctors %}
+                        <tr>
+                            <td>{{ doctor.name }}</td>
+                            <td>{{ doctor.specialization }}</td>
+                            <td><strong style="color: var(--success-color);">{{ doctor.available_slots_per_day
+                                    }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

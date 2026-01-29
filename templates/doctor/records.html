@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Records - Doctor - NexMed-Hub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/records.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 0;">
+    <div class="flex-between mb-3">
+        <h1 style="font-size: 2rem; font-weight: 700;">Patient Records</h1>
+        <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-outline"
+            style="padding: 0.5rem 1rem; font-size: 0.875rem;">Back</a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <input type="text" id="recordSearch" class="form-control"
+            placeholder="Search by patient name, diagnosis, or prescription..."
+            style="max-width: 500px; padding: 1rem; border-radius: 99px; box-shadow: var(--shadow-sm);">
+    </div>
+
+    <div class="card" style="background: transparent; border: none; box-shadow: none;">
+        <div class="card-body" style="padding: 0;">
+            {% if patients_map %}
+            <div class="records-grid">
+                {% for patient, patient_records in patients_map.items() %}
+                <div class="record-card card" data-patient="{{ patient.username }}">
+                    <div class="card-header flex-between"
+                        style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">{{
+                                patient.username }} <span
+                                    style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">(Age: {{
+                                    patient.age if patient.age else 'N/A' }})</span></h3>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">{{ patient.email }}</span>
+                        </div>
+                        <span class="badge badge-info">{{ patient_records|length }} Records</span>
+                    </div>
+                    <div class="card-body">
+                        <h4
+                            style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 1rem; font-weight: 600;">
+                            Latest Updates</h4>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                            {% for record in patient_records[:3] %}
+                            <div style="padding-left: 0.75rem; border-left: 2px solid var(--border-light);">
+                                <div class="flex-between" style="margin-bottom: 0.2rem;">
+                                    <span style="font-weight: 600; font-size: 0.9rem;">{{ record.diagnosis }}</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">{{
+                                        record.visit_date.strftime('%d/%m') }}</span>
+                                </div>
+                                <div
+                                    style="font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    Rx: {{ record.prescription if record.prescription else 'None' }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <a href="{{ url_for('doctor.patient_records_view', patient_id=patient.id) }}"
+                            class="btn btn-outline" style="width: 100%; text-align: center;">View Full Record</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center p-4">
+                <p style="color: var(--text-muted);">No patient records found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('recordSearch').addEventListener('keyup', function () {
+        const query = this.value.toLowerCase();
+        const cards = document.querySelectorAll('.record-card');
+
+        cards.forEach(card => {
+            const patient = card.getAttribute('data-patient').toLowerCase();
+
+            if (patient.includes(query)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

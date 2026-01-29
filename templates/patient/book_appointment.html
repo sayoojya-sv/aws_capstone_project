@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - NexGen Hospital{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        overflow: hidden;
+    }
+
+    main {
+        height: calc(100vh - 60px);
+        overflow: hidden;
+    }
+
+    .footer {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div
+    style="height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center; padding: 0.5rem 15px; overflow: hidden;">
+    <div style="width: 100%; max-width: 480px;">
+        <div class="flex-between" style="margin-bottom: 0.5rem;">
+            <div>
+                <h1 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.2rem;">Book an Appointment</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 0; font-size: 0.8rem;">Schedule your visit with
+                    our expert doctors</p>
+            </div>
+            <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline"
+                style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">← Back</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body" style="padding: 0.75rem;">
+                <form method="POST" action="{{ url_for('patient.book_appointment') }}" id="bookingForm">
+                    <div class="form-group" style="margin-bottom: 0.6rem;">
+                        <label for="doctor_id" class="form-label"
+                            style="font-size: 0.85rem; margin-bottom: 0.25rem;">Select Doctor</label>
+                        <select id="doctor_id" name="doctor_id" class="form-control"
+                            style="padding: 0.4rem; font-size: 0.85rem;" required>
+                            <option value="">Choose a doctor...</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">{{ doctor.name }} - {{ doctor.specialization }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0.6rem;">
+                        <label for="appointment_date" class="form-label"
+                            style="font-size: 0.85rem; margin-bottom: 0.25rem;">Appointment Date</label>
+                        <input type="date" id="appointment_date" name="appointment_date" class="form-control"
+                            style="padding: 0.4rem; font-size: 0.85rem;" required min="{{ today }}">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0.6rem;">
+                        <label for="appointment_time" class="form-label"
+                            style="font-size: 0.85rem; margin-bottom: 0.25rem;">Preferred Time</label>
+                        <select id="appointment_time" name="appointment_time" class="form-control"
+                            style="padding: 0.4rem; font-size: 0.85rem;" required>
+                            <option value="">Select time slot...</option>
+                            <option value="09:00 AM">09:00 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="02:00 PM">02:00 PM</option>
+                            <option value="03:00 PM">03:00 PM</option>
+                            <option value="04:00 PM">04:00 PM</option>
+                            <option value="05:00 PM">05:00 PM</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0.6rem;">
+                        <label for="reason" class="form-label"
+                            style="font-size: 0.85rem; margin-bottom: 0.25rem;">Reason for Visit (Optional)</label>
+                        <textarea id="reason" name="reason" class="form-control"
+                            style="padding: 0.4rem; font-size: 0.85rem; height: 65px; resize: none;"
+                            placeholder="Describe your symptoms..."></textarea>
+                    </div>
+
+                    <div id="slotInfo"
+                        style="padding: 0.5rem; background: rgba(79, 172, 254, 0.1); border-radius: var(--radius-md); margin-bottom: 0.6rem; display: none; font-size: 0.85rem;">
+                        <p style="margin: 0; color: var(--info-color);"></p>
+                    </div>
+
+                    <div class="flex gap-2" style="margin-bottom: 0;">
+                        <button type="submit" class="btn btn-primary"
+                            style="flex: 1; padding: 0.5rem; font-size: 0.85rem;">Submit Request</button>
+                        <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline"
+                            style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set minimum date to today
+    document.getElementById('appointment_date').min = new Date().toISOString().split('T')[0];
+
+    // Check slot availability
+    const doctorSelect = document.getElementById('doctor_id');
+    const dateInput = document.getElementById('appointment_date');
+    const slotInfo = document.getElementById('slotInfo');
+
+    function checkSlots() {
+        const doctorId = doctorSelect.value;
+        const date = dateInput.value;
+
+        if (doctorId && date) {
+            fetch(`/patient/check-slots/${doctorId}/${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        slotInfo.style.display = 'none';
+                    } else {
+                        slotInfo.style.display = 'block';
+                        const p = slotInfo.querySelector('p');
+                        if (data.available_slots > 0) {
+                            p.textContent = `✓ ${data.available_slots} slots available out of ${data.total_slots}`;
+                            slotInfo.style.background = 'rgba(67, 233, 123, 0.1)';
+                            p.style.color = 'var(--success-color)';
+                        } else {
+                            p.textContent = `✕ No slots available for this date. Please choose another date.`;
+                            slotInfo.style.background = 'rgba(245, 87, 108, 0.1)';
+                            p.style.color = 'var(--danger-color)';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking slots:', error);
+                });
+        }
+    }
+
+    doctorSelect.addEventListener('change', checkSlots);
+    dateInput.addEventListener('change', checkSlots);
+</script>
+{% endblock %}

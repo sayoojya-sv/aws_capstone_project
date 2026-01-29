@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Dynamic Title Block -->
+    <title>{% block title %}NexMed-Hub{% endblock %}</title>
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Page Specific CSS Block -->
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <!-- Brand Logo and Name -->
+            <a href="{{ url_for('index') }}" class="navbar-brand"
+                style="text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NexMed-Hub Logo"
+                    style="height: 40px; width: auto;">
+                <span
+                    style="font-weight: 700; font-size: 1.5rem; background: linear-gradient(135deg, #75668d 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">NexMed-Hub</span>
+            </a>
+
+            <!-- Navigation Links -->
+            <ul class="navbar-menu">
+                {% if current_user.is_authenticated %}
+                <!-- Role-based Navigation -->
+
+                <!-- Patient Menu -->
+                {% if current_user.role == 'patient' %}
+                <li><a href="{{ url_for('patient.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('patient.book_appointment') }}">Book Appointment</a></li>
+                <li><a href="{{ url_for('patient.appointments') }}">My Appointments</a></li>
+                <li><a href="{{ url_for('patient.records') }}">Medical Records</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+
+                <!-- Doctor Menu -->
+                {% elif current_user.role == 'doctor' %}
+                <li><a href="{{ url_for('doctor.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('doctor.appointments') }}">Appointments</a></li>
+                <li><a href="{{ url_for('doctor.records') }}">Patient Records</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+
+                <!-- Admin Menu -->
+                {% elif current_user.role == 'admin' %}
+                <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('admin.appointments') }}">Appointments</a></li>
+                <li><a href="{{ url_for('admin.manage_doctors') }}">Doctors</a></li>
+                <li><a href="{{ url_for('admin.set_slots') }}">Manage Slots</a></li>
+                <li><a href="{{ url_for('admin.patients') }}">Patients</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                {% endif %}
+
+                <!-- Common Logout for Authenticated Users -->
+                <li><a href="{{ url_for('auth.logout') }}" class="btn btn-danger"
+                        style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Logout</a></li>
+                {% else %}
+                <!-- Guest Menu -->
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li><a href="{{ url_for('auth.register') }}" class="btn btn-primary"
+                        style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Flash Messages Section -->
+    <!-- Displays success/error messages from Flask -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 NexMed-Hub. All rights reserved. | Transforming Healthcare with Technology</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

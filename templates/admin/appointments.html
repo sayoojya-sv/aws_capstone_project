@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Appointments - Admin{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 20px;">
+    <div class="flex-between mb-3">
+        <div>
+            <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">Appointment Management</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">Review and manage all appointment requests</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">← Back</a>
+    </div>
+
+    <!-- Doctor Tabs -->
+    <div class="tabs-container mb-4">
+        <div class="tabs-header"
+            style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-light);">
+            <button class="tab-btn active btn btn-outline" onclick="openTab(event, 'all-doctors')"
+                style="white-space: nowrap;">All Doctors</button>
+            {% for doctor in doctors %}
+            <button class="tab-btn btn btn-outline" onclick="openTab(event, 'doctor-{{ doctor.id }}')"
+                style="white-space: nowrap;">{{ doctor.name }}</button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Status Filters (Global) -->
+    <div style="margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <button onclick="filterStatus('all')" class="btn btn-sm btn-primary status-filter-btn" data-status="all">All
+            Status</button>
+        <button onclick="filterStatus('pending')" class="btn btn-sm btn-outline status-filter-btn"
+            data-status="pending">Pending</button>
+        <button onclick="filterStatus('approved')" class="btn btn-sm btn-outline status-filter-btn"
+            data-status="approved">Approved</button>
+        <button onclick="filterStatus('rejected')" class="btn btn-sm btn-outline status-filter-btn"
+            data-status="rejected">Rejected</button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if appointments %}
+
+            <!-- All Doctors Tab Content -->
+            <div id="all-doctors" class="tab-content" style="display: block;">
+                {% with appointments_list = appointments %}
+                {% include 'admin/_appointments_table.html' %}
+                {% endwith %}
+            </div>
+
+            <!-- Individual Doctor Tab Contents -->
+            {% for doctor in doctors %}
+            <div id="doctor-{{ doctor.id }}" class="tab-content" style="display: none;">
+                {% set doctor_appointments = [] %}
+                {% for appt in appointments %}
+                {% if appt.doctor_id == doctor.id %}
+                {% set _ = doctor_appointments.append(appt) %}
+                {% endif %}
+                {% endfor %}
+
+                {% if doctor_appointments %}
+                {% with appointments_list = doctor_appointments %}
+                {% include 'admin/_appointments_table.html' %}
+                {% endwith %}
+                {% else %}
+                <p class="text-center text-muted p-4">No appointments found for {{ doctor.name }}.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% else %}
+            <p style="text-align: center; color: var(--text-secondary); padding: 3rem;">No appointments found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabId) {
+        // Hide all tab content
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Deactivate all tab buttons
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("btn-primary");
+            tablinks[i].classList.add("btn-outline");
+        }
+
+        // Show the current tab
+        document.getElementById(tabId).style.display = "block";
+
+        // Activate the clicked button
+        evt.currentTarget.classList.remove("btn-outline");
+        evt.currentTarget.classList.add("btn-primary");
+    }
+
+    function filterStatus(status) {
+        // Update button styles
+        document.querySelectorAll('.status-filter-btn').forEach(btn => {
+            if (btn.getAttribute('data-status') === status) {
+                btn.classList.remove('btn-outline');
+                btn.classList.add('btn-primary');
+            } else {
+                btn.classList.add('btn-outline');
+                btn.classList.remove('btn-primary');
+            }
+        });
+
+        // Loop through all tables and rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const rowStatus = row.getAttribute('data-status');
+            if (status === 'all' || rowStatus === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+</div>
+{% endblock %}

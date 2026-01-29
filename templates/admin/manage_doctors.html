@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Doctors - Admin - NexMed-Hub{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 0;">
+    <div class="flex-between mb-3">
+        <h1 style="font-size: 2rem; font-weight: 700;">Manage Doctors</h1>
+        <a href="{{ url_for('admin.create_doctor') }}" class="btn btn-primary">Create New Doctor</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">All Doctors</h2>
+        </div>
+        <div class="card-body">
+            {% if doctors %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Slots/Day</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doctor in doctors %}
+                        <tr>
+                            <td>{{ doctor.name }}</td>
+                            <td>{{ doctor.specialization }}</td>
+                            <td>{{ doctor.available_slots_per_day }}</td>
+                            <td>{{ doctor.user.username if doctor.user else 'N/A' }}</td>
+                            <td>{{ doctor.user.email if doctor.user else 'N/A' }}</td>
+                            <td>{{ doctor.created_at.strftime('%d-%m-%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="color: var(--text-muted);">No doctors found. Create a new doctor account to get started.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

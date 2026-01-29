@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - NexGen Hospital{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 20px;">
+    <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">Admin Dashboard!</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Hospital management and oversight</p>
+
+    <!-- Statistics Overview -->
+    <div class="stats-grid">
+        <a href="{{ url_for('admin.patients') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_patients }}</div>
+                <div class="stat-label">Total Patients</div>
+            </div>
+        </a>
+        <a href="{{ url_for('admin.appointments') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_appointments }}</div>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+        </a>
+        <a href="{{ url_for('admin.appointments') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card">
+                <div class="stat-value">{{ pending_appointments }}</div>
+                <div class="stat-label">Pending Approvals</div>
+            </div>
+        </a>
+        <a href="{{ url_for('admin.manage_doctors') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_doctors }}</div>
+                <div class="stat-label">Active Doctors</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="margin: 3rem 0;">
+        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem;">Quick Actions</h2>
+        <div class="flex gap-2">
+            <a href="{{ url_for('admin.appointments') }}" class="btn btn-primary">📋 Manage Appointments</a>
+            <a href="{{ url_for('admin.set_slots') }}" class="btn btn-secondary">⚙️ Configure Slots</a>
+            <a href="{{ url_for('admin.patients') }}" class="btn btn-success">👥 View Patients</a>
+        </div>
+    </div>
+
+    <!-- Pending Appointments -->
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3 class="card-title">Pending Appointment Requests</h3>
+            <a href="{{ url_for('admin.appointments') }}"
+                style="color: var(--primary-color); text-decoration: none; font-weight: 600;">View All →</a>
+        </div>
+        <div class="card-body">
+            {% if recent_pending %}
+            <div class="table-container" style="padding: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in recent_pending %}
+                        <tr>
+                            <td>#{{ appointment.id }}</td>
+                            <td>{{ appointment.patient.username }}</td>
+                            <td>{{ appointment.doctor.name }}</td>
+                            <td>{{ appointment.appointment_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ appointment.appointment_time }}</td>
+                            <td>
+                                <div class="flex gap-1">
+                                    <a href="{{ url_for('admin.approve_appointment', appointment_id=appointment.id) }}"
+                                        class="btn btn-success"
+                                        style="padding: 0.375rem 0.75rem; font-size: 0.875rem;">Approve</a>
+                                    <a href="{{ url_for('admin.reject_appointment', appointment_id=appointment.id) }}"
+                                        class="btn btn-danger"
+                                        style="padding: 0.375rem 0.75rem; font-size: 0.875rem;">Reject</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No pending appointments at the
+                moment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
