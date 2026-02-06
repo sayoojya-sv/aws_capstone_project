@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}About Us - NexMed-Hub{% endblock %}
@@ -6,40 +7,42 @@
 <div class="container" style="padding: 1.5rem 15px; max-width: 800px;">
     <h1 style="font-size: 1.75rem; font-weight: 700; text-align: center; margin-bottom: 1rem;">About NexMed-Hub</h1>
 
-    <!-- Our Mission -->
     <div class="card" style="margin-bottom: 1rem;">
         <div class="card-body">
-            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; 
-                background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                Our Mission
-            </h2>
+            <h2
+                style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Our Mission</h2>
             <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
-                At NexMed-Hub, we are committed to transforming healthcare delivery through innovative technology solutions.
+                At NexMed-Hub, we are committed to transforming healthcare delivery through innovative technology
+                solutions.
                 Our mission is to make quality healthcare accessible, efficient, and patient-centered by providing a
-                seamless digital platform that connects patients with healthcare providers.
+                seamless
+                digital platform that connects patients with healthcare providers.
             </p>
         </div>
     </div>
 
-    <!-- What We Offer -->
     <div class="card" style="margin-bottom: 1rem;">
         <div class="card-body">
-            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; 
-                background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                What We Offer
-            </h2>
-            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <h2
+                style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                What We Offer</h2>
+            <div class="stats-grid"
+                style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;">
                 <div style="text-align: center;">
                     <div style="font-size: 2rem; margin-bottom: 0.3rem;">🗓️</div>
-                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">Easy Appointment Booking</h3>
+                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">Easy Appointment
+                        Booking</h3>
                 </div>
                 <div style="text-align: center;">
                     <div style="font-size: 2rem; margin-bottom: 0.3rem;">⚡</div>
-                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">Real-Time Updates</h3>
+                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">Real-Time Updates
+                    </h3>
                 </div>
                 <div style="text-align: center;">
                     <div style="font-size: 2rem; margin-bottom: 0.3rem;">📋</div>
-                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">Medical Records Management</h3>
+                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">Medical Records
+                        Management</h3>
                 </div>
                 <div style="text-align: center;">
                     <div style="font-size: 2rem; margin-bottom: 0.3rem;">🔒</div>
@@ -49,13 +52,11 @@
         </div>
     </div>
 
-    <!-- Why Choose Us -->
     <div class="card">
         <div class="card-body">
-            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; 
-                background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                Why Choose Us
-            </h2>
+            <h2
+                style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Why Choose Us</h2>
             <div style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
                 <ul style="list-style: none; padding: 0;">
                     <li style="margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative;">
@@ -72,18 +73,18 @@
                     </li>
                     <li style="margin-bottom: 1rem; padding-left: 2rem; position: relative;">
                         <span style="position: absolute; left: 0; color: var(--primary-color);">✓</span>
-                        <strong>Data Security:</strong> Your health information is protected with industry-standard encryption
+                        <strong>Data Security:</strong> Your health information is protected with industry-standard
+                        encryption
                     </li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Call to Action -->
     <div style="text-align: center; margin-top: 1.5rem;">
-        <a href="{{ url_for('auth.signup') }}" class="btn btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">
-            Get Started Today
-        </a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary"
+            style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">Get Started Today</a>
     </div>
 </div>
 {% endblock %}
+
