@@ -1,47 +1,57 @@
+# auth.py
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import boto3
-from boto3.dynamodb.conditions import Key, Attr
-from botocore.exceptions import ClientError
 
-# Initialize AWS DynamoDB (use same region and tables)
+auth = Blueprint('auth', __name__, template_folder='templates')
+
+# DynamoDB
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 users_table = dynamodb.Table('Users')
 
-# SNS if you want notifications
-sns = boto3.client('sns', region_name='us-east-1')
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:522814706478:aws_capstone_project'
+# Signup Route
+@auth.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
 
-def send_notification(subject, message):
-    try:
-        sns.publish(
-            TopicArn=SNS_TOPIC_ARN,
-            Subject=subject,
-            Message=message
-        )
-    except ClientError as e:
-        print(f"Error sending notification: {e}")
+        response = users_table.get_item(Key={'username': username})
+        if 'Item' in response:
+            flash("User already exists!", "danger")
+            return redirect(url_for('auth.signup'))
+
+        hashed_password = generate_password_hash(password)
+        users_table.put_item(Item={
+            'username': username,
+            'email': email,
+            'password_hash': hashed_password,
+            'role': 'patient',
+            'created_at': datetime.utcnow().isoformat()
+        })
+        flash("Signup successful! Please login.", "success")
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/register.html')
 
 
-# Create blueprint
-auth = Blueprint('auth', __name__)
-
-# --- Routes ---
-
+# Login Route
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         response = users_table.get_item(Key={'username': username})
         item = response.get('Item')
 
         if item and check_password_hash(item['password_hash'], password):
             session['username'] = item['username']
             session['role'] = item['role']
-            send_notification("User Login", f"User {username} has logged in.")
-
+            flash("Login successful!", "success")
+            # Redirect based on role
             if item['role'] == 'admin':
                 return redirect(url_for('admin_dashboard'))
             elif item['role'] == 'doctor':
@@ -49,43 +59,14 @@ def login():
             else:
                 return redirect(url_for('patient_dashboard'))
         flash("Invalid credentials!", "danger")
+        return redirect(url_for('auth.login'))
+
     return render_template('auth/login.html')
 
 
-@auth.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-        dob = request.form.get('dob')
-
-        # Check if user exists
-        response = users_table.get_item(Key={'username': username})
-        if 'Item' in response:
-            flash("User already exists!", "warning")
-            return redirect(url_for('auth.signup'))
-
-        hashed_password = generate_password_hash(password)
-
-        users_table.put_item(Item={
-            'username': username,
-            'email': email,
-            'password_hash': hashed_password,
-            'role': 'patient',
-            'date_of_birth': dob,
-            'created_at': datetime.utcnow().isoformat()
-        })
-
-        send_notification("New User Signup", f"User {username} has signed up.")
-        flash("Signup successful! Please login.", "success")
-        return redirect(url_for('auth.login'))
-
-    return render_template('auth/register.html')
-
-
+# Logout Route
 @auth.route('/logout')
 def logout():
     session.clear()
-    flash("You have been logged out.", "success")
+    flash("You have been logged out.", "info")
     return redirect(url_for('index'))
