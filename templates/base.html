@@ -8,6 +8,7 @@
     <title>{% block title %}NexMed-Hub{% endblock %}</title>
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Page Specific CSS Block -->
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -26,55 +27,63 @@
 
             <!-- Navigation Links -->
             <ul class="navbar-menu">
-                {% if session.get('username') %}
-                    {% if session.get('role') == 'patient' %}
-                        <li><a href="{{ url_for('patient_dashboard') }}">Dashboard</a></li>
-                        <li><a href="{{ url_for('book_appointment') }}">Book Appointment</a></li>
-                        <li><a href="{{ url_for('patient_appointments') }}">My Appointments</a></li>
-                        <li><a href="{{ url_for('patient_records') }}">Medical Records</a></li>
-                        <li><a href="{{ url_for('about') }}">About</a></li>
-                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
-                    {% elif session.get('role') == 'doctor' %}
-                        <li><a href="{{ url_for('doctor_dashboard') }}">Dashboard</a></li>
-                        <li><a href="{{ url_for('doctor_appointments') }}">Appointments</a></li>
-                        <li><a href="{{ url_for('doctor_records') }}">Patient Records</a></li>
-                        <li><a href="{{ url_for('about') }}">About</a></li>
-                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
-                    {% elif session.get('role') == 'admin' %}
-                        <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
-                        <li><a href="{{ url_for('admin_appointments') }}">Appointments</a></li>
-                        <li><a href="{{ url_for('admin_manage_doctors') }}">Doctors</a></li>
-                        <li><a href="{{ url_for('admin_set_slots') }}">Manage Slots</a></li>
-                        <li><a href="{{ url_for('admin_patients') }}">Patients</a></li>
-                        <li><a href="{{ url_for('about') }}">About</a></li>
-                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
-                    {% endif %}
+                {% if current_user.is_authenticated %}
+                <!-- Role-based Navigation -->
 
-                    <!-- Logout -->
-                    <li><a href="{{ url_for('auth.logout') }}" class="btn btn-danger"
-                            style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Logout</a></li>
+                <!-- Patient Menu -->
+                {% if current_user.role == 'patient' %}
+                <li><a href="{{ url_for('patient.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('patient.book_appointment') }}">Book Appointment</a></li>
+                <li><a href="{{ url_for('patient.appointments') }}">My Appointments</a></li>
+                <li><a href="{{ url_for('patient.records') }}">Medical Records</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+
+                <!-- Doctor Menu -->
+                {% elif current_user.role == 'doctor' %}
+                <li><a href="{{ url_for('doctor.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('doctor.appointments') }}">Appointments</a></li>
+                <li><a href="{{ url_for('doctor.records') }}">Patient Records</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+
+                <!-- Admin Menu -->
+                {% elif current_user.role == 'admin' %}
+                <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('admin.appointments') }}">Appointments</a></li>
+                <li><a href="{{ url_for('admin.manage_doctors') }}">Doctors</a></li>
+                <li><a href="{{ url_for('admin.set_slots') }}">Manage Slots</a></li>
+                <li><a href="{{ url_for('admin.patients') }}">Patients</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                {% endif %}
+
+                <!-- Common Logout for Authenticated Users -->
+                <li><a href="{{ url_for('auth.logout') }}" class="btn btn-danger"
+                        style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Logout</a></li>
                 {% else %}
-                    <!-- Guest Menu -->
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-                    <li><a href="{{ url_for('about') }}">About</a></li>
-                    <li><a href="{{ url_for('contact') }}">Contact</a></li>
-                    <li><a href="{{ url_for('auth.signup') }}" class="btn btn-primary"
-                            style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Register</a></li>
+                <!-- Guest Menu -->
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li><a href="{{ url_for('auth.register') }}" class="btn btn-primary"
+                        style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Register</a></li>
                 {% endif %}
             </ul>
         </div>
     </nav>
 
     <!-- Flash Messages Section -->
+    <!-- Displays success/error messages from Flask -->
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
 
