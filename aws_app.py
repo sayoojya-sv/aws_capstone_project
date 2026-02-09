@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import boto3
@@ -13,7 +14,7 @@ app.secret_key = os.environ.get('SECRET_KEY') or 'your_secret_key_here'
 
 # AWS Configuration
 REGION = 'us-east-1' # Replace with your region
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:522814706478:aws_capstone_project' # Replace with your actual ARN
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:604665149129:aws_capstone_topic' # Replace with your actual ARN
 
 # Boto3 Resources
 dynamodb = boto3.resource('dynamodb', region_name=REGION)
